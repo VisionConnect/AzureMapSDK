@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Weather Radar Map</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+    <link rel="stylesheet" href="https://atlas.microsoft.com/sdk/css/atlas.min.css?api-version=2.0" type="text/css" />
+    <script src="https://atlas.microsoft.com/sdk/js/atlas.min.js?api-version=2.0"></script>
+    <style>
+        #myMap {
+            height: 100vh;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <h1>Weather Radar Map</h1>
+    <div id="myMap"></div>
+    <script>
+        var map = new atlas.Map('myMap', {
+            center: [-81.78002, 26.33041], // Longitude, Latitude
+            zoom: 12,
+            view: 'Auto',
+            authOptions: {
+                authType: 'subscriptionKey',
+                subscriptionKey: 'AUp8aKG52AZAhTXqJIGOUcwHR631iXzXHVHSlP74nzfPn6P148gsJQQJ99AIACYeBjFCSWfNAAAgAZMPux8s'
+            }
+        });
+
+        map.events.add('ready', function () {
+            // Add weather layers
+            map.layers.add(new atlas.layer.TileLayer({
+                tileUrl: 'https://atlas.microsoft.com/weather/radar/tile/{z}/{x}/{y}.png?api-version=1.0&subscription-key=Your_Azure_Maps_Subscription_Key',
+                opacity: 0.7
+            }));
+
+            map.layers.add(new atlas.layer.TileLayer({
+                tileUrl: 'https://atlas.microsoft.com/weather/precipitation/tile/{z}/{x}/{y}.png?api-version=1.0&subscription-key=Your_Azure_Maps_Subscription_Key',
+                opacity: 0.7
+            }));
+
+            map.layers.add(new atlas.layer.TileLayer({
+                tileUrl: 'https://atlas.microsoft.com/weather/temperature/tile/{z}/{x}/{y}.png?api-version=1.0&subscription-key=Your_Azure_Maps_Subscription_Key',
+                opacity: 0.7
+            }));
+
+            map.layers.add(new atlas.layer.TileLayer({
+                tileUrl: 'https://atlas.microsoft.com/weather/wind/tile/{z}/{x}/{y}.png?api-version=1.0&subscription-key=Your_Azure_Maps_Subscription_Key',
+                opacity: 0.7
+            }));
+
+            // Add a draggable marker
+            var marker = new atlas.HtmlMarker({
+                color: 'DodgerBlue',
+                text: '1',
+                position: [-81.78002, 26.33041],
+                draggable: true
+            });
+            map.markers.add(marker);
+
+            // Event listener for marker drag end
+            map.events.add('dragend', marker, function (e) {
+                var position = e.target.getOptions().position;
+                console.log('Marker moved to:', position);
+                // Collect data or perform actions based on new marker position
+            });
+        });
+    </script>
+</body>
+</html>
