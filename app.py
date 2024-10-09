@@ -9,7 +9,7 @@ logging.basicConfig(level=logging.DEBUG)
 
 # Function to get properties from the database
 def get_properties():
-    conn = pyodbc.connect('DRIVER={SQL Server};SERVER=your_server;DATABASE=Irrigation_db;UID=user;PWD=password')
+    conn = pyodbc.connect('DRIVER={SQL Server};SERVER=vision8789.database.windows.net;DATABASE=Irrigation_db;UID=CloudSA5fb4cfcf;PWD=Vision8789$')
     cursor = conn.cursor()
     cursor.execute("SELECT Property_Name, Latitude, Longitude FROM Properties")
     properties = cursor.fetchall()
