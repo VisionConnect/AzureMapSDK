@@ -1,13 +1,15 @@
-import os
 from flask import Flask, render_template
+import logging
 
 app = Flask(__name__)
 
+# Enable detailed logging
+logging.basicConfig(level=logging.DEBUG)
+
 @app.route('/')
 def index():
-    return render_template('index.html')
+    app.logger.info("Serving index.html")
+    return render_template('index.html')  # This will serve your index.html
 
 if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 8000))  # Azure App Service will provide the PORT environment variable
-    app.run(host='0.0.0.0', port=port)
-
+    app.run(debug=False)
