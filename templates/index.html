@@ -16,9 +16,16 @@
 <body>
     <h1>Weather Radar Map</h1>
     <div id="myMap"></div>
+    
+    <!-- Buttons for toggling layers -->
+    <button onclick="toggleRadar()">Toggle Radar</button>
+    <button onclick="toggleTemperature()">Toggle Temperature</button>
+    <button onclick="togglePrecipitation()">Toggle Precipitation</button>
+    <button onclick="toggleWind()">Toggle Wind</button>
+
     <script>
         var map = new atlas.Map('myMap', {
-            center: [-81.78002, 26.33041], // Longitude, Latitude
+            center: [-81.807450, 26.387660], // Longitude, Latitude
             zoom: 12,
             view: 'Auto',
             authOptions: {
@@ -28,26 +35,84 @@
         });
 
         map.events.add('ready', function () {
-            // Add weather layers
-            map.layers.add(new atlas.layer.TileLayer({
-                tileUrl: 'https://atlas.microsoft.com/weather/radar/tile/{z}/{x}/{y}.png?api-version=1.0&subscription-key=Your_Azure_Maps_Subscription_Key',
-                opacity: 0.7
-            }));
+            // Fetch property data and add pins
+            fetch('/properties')  // Flask route that returns property data
+                .then(response => response.json())
+                .then(properties => {
+                    properties.forEach(property => {
+                        var marker = new atlas.HtmlMarker({
+                            color: 'DodgerBlue',
+                            text: property.name,
+                            position: [property.longitude, property.latitude],
+                            draggable: false
+                        });
+                        map.markers.add(marker);
 
-            map.layers.add(new atlas.layer.TileLayer({
-                tileUrl: 'https://atlas.microsoft.com/weather/precipitation/tile/{z}/{x}/{y}.png?api-version=1.0&subscription-key=Your_Azure_Maps_Subscription_Key',
-                opacity: 0.7
-            }));
+                        // Zoom into the property when the pin is clicked
+                        map.events.add('click', marker, function () {
+                            map.setCamera({
+                                center: [property.longitude, property.latitude],
+                                zoom: 14
+                            });
+                        });
+                    });
+                });
 
-            map.layers.add(new atlas.layer.TileLayer({
-                tileUrl: 'https://atlas.microsoft.com/weather/temperature/tile/{z}/{x}/{y}.png?api-version=1.0&subscription-key=Your_Azure_Maps_Subscription_Key',
-                opacity: 0.7
-            }));
+            // Weather layers
+            var radarLayer, tempLayer, precipLayer, windLayer;
 
-            map.layers.add(new atlas.layer.TileLayer({
-                tileUrl: 'https://atlas.microsoft.com/weather/wind/tile/{z}/{x}/{y}.png?api-version=1.0&subscription-key=Your_Azure_Maps_Subscription_Key',
-                opacity: 0.7
-            }));
+            // Layer toggling functions
+            function toggleRadar() {
+                if (!radarLayer) {
+                    radarLayer = new atlas.layer.TileLayer({
+                        tileUrl: 'https://atlas.microsoft.com/weather/radar/tile/{z}/{x}/{y}.png?api-version=1.0&subscription-key=Your_Azure_Maps_Subscription_Key',
+                        opacity: 0.7
+                    });
+                    map.layers.add(radarLayer);
+                } else {
+                    map.layers.remove(radarLayer);
+                    radarLayer = null;
+                }
+            }
+
+            function toggleTemperature() {
+                if (!tempLayer) {
+                    tempLayer = new atlas.layer.TileLayer({
+                        tileUrl: 'https://atlas.microsoft.com/weather/temperature/tile/{z}/{x}/{y}.png?api-version=1.0&subscription-key=Your_Azure_Maps_Subscription_Key',
+                        opacity: 0.7
+                    });
+                    map.layers.add(tempLayer);
+                } else {
+                    map.layers.remove(tempLayer);
+                    tempLayer = null;
+                }
+            }
+
+            function togglePrecipitation() {
+                if (!precipLayer) {
+                    precipLayer = new atlas.layer.TileLayer({
+                        tileUrl: 'https://atlas.microsoft.com/weather/precipitation/tile/{z}/{x}/{y}.png?api-version=1.0&subscription-key=Your_Azure_Maps_Subscription_Key',
+                        opacity: 0.7
+                    });
+                    map.layers.add(precipLayer);
+                } else {
+                    map.layers.remove(precipLayer);
+                    precipLayer = null;
+                }
+            }
+
+            function toggleWind() {
+                if (!windLayer) {
+                    windLayer = new atlas.layer.TileLayer({
+                        tileUrl: 'https://atlas.microsoft.com/weather/wind/tile/{z}/{x}/{y}.png?api-version=1.0&subscription-key=Your_Azure_Maps_Subscription_Key',
+                        opacity: 0.7
+                    });
+                    map.layers.add(windLayer);
+                } else {
+                    map.layers.remove(windLayer);
+                    windLayer = null;
+                }
+            }
 
             // Add a draggable marker
             var marker = new atlas.HtmlMarker({
