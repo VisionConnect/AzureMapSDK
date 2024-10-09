@@ -30,5 +30,5 @@ def index():
 
 # Start the application
 if __name__ == '__main__':
-    app.run(debug=False)
-
+    port = int(os.environ.get('PORT', 8000))  # Azure App Service will provide the PORT environment variable
+    app.run(host='0.0.0.0', port=port)
