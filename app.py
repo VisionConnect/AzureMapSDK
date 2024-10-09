@@ -1,6 +1,7 @@
 from flask import Flask, render_template, jsonify
 import pyodbc
 import logging
+import os  # Missing import for os
 
 app = Flask(__name__)
 
